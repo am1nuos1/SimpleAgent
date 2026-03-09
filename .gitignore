@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+logs/
+.venv/
+venv/
+.env
+.vscode/
+data/
+*.pdf
+*.log
+config/private.yaml
