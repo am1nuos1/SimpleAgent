@@ -2,4 +2,4 @@ chat_model_name : qwen3-max
 
 embedding_model_name : text-embedding-v4
 
-dashscope_api_key: null
+dashscope_api_key: sk-e2ba4af92f3d4c7fa07edc8fa73dbca1
