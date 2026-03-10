@@ -1,11 +1,7 @@
-from rag.vector_store import VectorStoreService
+from rag.rag_service import RagSummarizeService
 
 
-vs = VectorStoreService()
-vs.load_document()
-ret = vs.get_retriever()
-res = ret.invoke("lost")
+rag = RagSummarizeService()
+res = rag.rag_summarize("机器人如何工作")
 
-for r in res:
-    print(r.page_content)
-    print(20*"=")
+print(res)

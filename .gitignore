@@ -1,11 +1,29 @@
+# Python cache
 __pycache__/
 *.pyc
-logs/
+
+# Virtual environments
 .venv/
 venv/
 .env
+
+# Editor
 .vscode/
+
+# Logs
+logs/
+
+# Data files
 data/
-*.pdf
-*.log
-config/private.yaml
+
+# Vector database
+rag/chorma_db/
+
+# # Private config
+# config/private.yaml
+
+# Temp / checksum
+md5.txt
+
+# Prompts
+prompts/
