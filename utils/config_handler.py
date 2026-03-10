@@ -1,12 +1,11 @@
 #yaml
 
 import yaml
-from path_tool import get_abs_path
+from utils.path_tool import get_abs_path
 
 def load_rag_config(config_path:str = "config/rag_config.yaml", encoding:str = "utf-8") -> dict:
     with open(get_abs_path(config_path), "r", encoding=encoding) as f:
         return yaml.load(f, Loader = yaml.FullLoader)
-    
 
 
 def load_chroma_config(config_path:str = "config/chroma_config.yaml", encoding:str = "utf-8") -> dict:

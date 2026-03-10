@@ -1,6 +1,6 @@
 import logging
 import os
-from path_tool import get_abs_path
+from utils.path_tool import get_abs_path
 from datetime import datetime
 
 LOG_ROOT = get_abs_path("logs")
