@@ -28,7 +28,7 @@ class RagSummarizeService():
         counter = 0
         for doc in context_docs:
             counter +=1 
-            context += f"[参考资料第{counter}]: {doc.page_content} | 元数据：{doc.metadata} \n"
+            context += f"[Reference {counter}]: {doc.page_content} | Metadata: {doc.metadata} \n"
 
 
         return self.chain.invoke(
@@ -40,6 +40,6 @@ class RagSummarizeService():
             
 if __name__ == "__main__" :
     rag = RagSummarizeService()
-    res = rag.rag_summarize("机器人如何工作")
+    res = rag.rag_summarize("How does the robot work")
 
     print(res)

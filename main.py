@@ -2,6 +2,6 @@ from rag.rag_service import RagSummarizeService
 
 
 rag = RagSummarizeService()
-res = rag.rag_summarize("机器人如何工作")
+res = rag.rag_summarize("How does the robot work")
 
 print(res)
