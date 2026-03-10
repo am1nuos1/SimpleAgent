@@ -79,7 +79,7 @@ def fetch_external_data(user_id: str, month: str) -> str:
     except KeyError:
         logger.warning(f"[fetch_external_data] Failed to retrieve usage record data for user: {user_id} in {month}")
         return ""
-    
+
 
 
 @tool(description="No parameters, no return value. When called, triggers middleware to automatically inject context information for the report generation scenario, providing context information for subsequent prompt switching")
