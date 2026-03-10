@@ -1,0 +1,9 @@
+streamlit
+langchain
+langgraph
+langchain-core
+langchain-community
+langchain-chroma
+langchain-text-splitters
+chromadb
+dashscope

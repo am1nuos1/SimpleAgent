@@ -28,6 +28,18 @@
 pip install streamlit langchain langgraph langchain-chroma langchain-community langchain-text-splitters chromadb pypdf pyyaml dashscope
 ```
 
+或者直接一键安装：
+
+```powershell
+.\install.ps1
+```
+
+如果你更习惯双击或 `cmd`：
+
+```bat
+install.bat
+```
+
 ### 2.2 配置模型
 
 项目默认读取阿里 DashScope 相关模型配置：
@@ -240,6 +252,18 @@ Install dependencies:
 
 ```bash
 pip install streamlit langchain langgraph langchain-chroma langchain-community langchain-text-splitters chromadb pypdf pyyaml dashscope
+```
+
+Or run the one-click installer:
+
+```powershell
+.\install.ps1
+```
+
+If you prefer `cmd` or double-click on Windows:
+
+```bat
+install.bat
 ```
 
 ### 2.2 Model Configuration
