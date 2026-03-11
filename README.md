@@ -16,6 +16,7 @@ This README removes any personal or absolute paths. All links are relative, and 
 
 - Local Chroma vector store for fast experiments
 - Supports `txt` and `pdf` documents
+- Encrypted PDFs are skipped during indexing
 - Middleware-driven dynamic prompt switching for report mode
 - Extensible tool layer to integrate real services
 
@@ -73,9 +74,25 @@ Alternatively, edit [config/rag_config.yaml](config/rag_config.yaml) locally (do
 ### Prepare Knowledge Data
 
 - Place documents under [data/](data/) (`*.txt`, `*.pdf`)
-- Demo data for report scenario: [data/external/records.csv](data/external/records.csv)
+- Password-protected/encrypted PDFs are not indexed and will be skipped
+- Optional demo data for report scenario: place at [data/external/records.csv](data/external/records.csv)
 
-### Build the Vector Store (first time or after updates)
+### Start the App
+
+Use the unified entrypoint:
+
+```bash
+python main.py
+```
+
+This will:
+
+- Preload documents under [data/](data/) into the vector store
+- Skip files already indexed via `md5.txt`
+- Skip encrypted PDFs that cannot be read
+- Launch the Streamlit app automatically
+
+### Build the Vector Store Only (optional)
 
 ```bash
 python rag/vector_store.py
@@ -87,12 +104,7 @@ This will:
 - Split with settings from [config/chroma_config.yaml](config/chroma_config.yaml)
 - Write vectors to local Chroma (directory per config)
 - Track file hashes in `md5.txt` to avoid re-indexing
-
-### Run the App
-
-```bash
-streamlit run app.py
-```
+- Skip encrypted PDFs that cannot be read
 
 Try some prompts in the UI:
 
@@ -140,11 +152,13 @@ SimpleAgent/
 |   |-- path_tool.py
 |   `-- prompt_loader.py
 |-- app.py
+|-- main.py
 `-- README.md
 ```
 
 ### Modules (relative paths)
 
+- [main.py](main.py): Unified startup entry, runs preload first and then launches Streamlit
 - [app.py](app.py): Streamlit chat entry and streaming output
 - [agent/react_agent.py](agent/react_agent.py): Create agent, register models, tools, middleware
 - [agent/tools/agent_tools.py](agent/tools/agent_tools.py): RAG retrieval, weather, user info, external records
@@ -174,7 +188,7 @@ SimpleAgent/
   A: Ensure `conda activate simpleagent` and install dependencies.
 
 - Q: Retrieval returns no results?
-  A: Place documents under [data/](data/) and rerun `python rag/vector_store.py`.
+  A: Place documents under [data/](data/) and rerun `python main.py` or `python rag/vector_store.py`. If a PDF is encrypted, it will be skipped during indexing.
 
 - Q: API key set but still failing?
   A: Verify the current terminal has the env var; restart the shell if needed.
@@ -200,7 +214,7 @@ SimpleAgent/
 ### 功能特性
 
 - 本地 Chroma 向量库，快速实验友好
-- 支持 `txt`/`pdf` 文档检索
+- 支持 `txt`/`pdf` 文档检索（加密 PDF 将自动跳过，不会被索引）
 - 中间件支持报表模式 Prompt 动态切换
 - 工具层可扩展对接真实业务接口
 
@@ -258,7 +272,8 @@ pip install streamlit langchain langgraph langchain-core langchain-community lan
 ### 准备知识库数据
 
 - 将要检索的文档放入 [data/](data/) 目录，支持 `*.txt` 与 `*.pdf`
-- 报表场景需要的演示数据位于 [data/external/records.csv](data/external/records.csv)
+- 加密 PDF 不会被索引，将自动跳过
+- （可选）将演示数据放在 [data/external/records.csv](data/external/records.csv)
 
 ### 构建向量库（首次或数据更新后执行）
 
@@ -274,6 +289,14 @@ python rag/vector_store.py
 - 使用 `md5.txt` 记录文件指纹，避免重复索引
 
 ### 启动应用
+
+推荐方式（包含预加载并自动启动）：
+
+```bash
+python main.py
+```
+
+仅启动应用（不预加载向量库）：
 
 ```bash
 streamlit run app.py
@@ -325,6 +348,7 @@ SimpleAgent/
 |   |-- path_tool.py
 |   `-- prompt_loader.py
 |-- app.py
+|-- main.py
 `-- README.md
 ```
 
