@@ -1,3 +1,8 @@
+<p align="center">
+  <img src="demo1.png" alt="Demo 1" width="45%">
+</p>
+
+
 [English](#english) | [中文](#中文)
 
 # SimpleAgent

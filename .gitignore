@@ -26,4 +26,4 @@ rag/chorma_db/
 md5.txt
 
 # Prompts
-prompts/
+prompts/*.txt
