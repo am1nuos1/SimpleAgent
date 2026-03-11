@@ -40,24 +40,17 @@ def listdir_with_allowed_type(folderpath : str, allowed_types: tuple[str, ...]):
     return files
 
 
-def pdf_loader(filepath: str, password: str | None = None) -> list[Document]:
+def pdf_loader(filepath: str) -> list[Document]:
     """Load a PDF file. Password is optional.
 
     Note: "password : None" is only a type annotation and does not set a default.
     The correct way to make it optional is "password: str | None = None".
     """
     try:
-        if password is None:
-            loader = PyPDFLoader(filepath)
-        else:
-            try:
-                loader = PyPDFLoader(filepath, password)
-            except TypeError:
-                loader = PyPDFLoader(filepath, password=password)
-        return loader.load()
+        return PyPDFLoader(filepath).load()
     except Exception as e:
         logger.error(f"[FileHandler] PDF load failed for {filepath}: {e}", exc_info=True)
-        raise
+        return []
 
 
 def txt_loader(filepath: str) -> list[Document]:
