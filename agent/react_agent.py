@@ -4,6 +4,7 @@ from utils.prompt_loader import load_system_prompts
 from agent.tools.agent_tools import (rag_summarize, get_weather, get_user_location, get_user_id,
                                      get_current_month, fetch_external_data, fill_context_for_report)
 from agent.tools.middle_ware import monitor_tool, log_before_model, report_prompt_switch
+import asyncio
 
 
 class ReactAgent:
@@ -25,6 +26,18 @@ class ReactAgent:
 
         # The third parameter context is the information in the runtime context, which is the flag for prompt switching
         for chunk in self.agent.stream(input_dict, stream_mode="values", context={"report": False}):
+            latest_message = chunk["messages"][-1]
+            if latest_message.content:
+                yield latest_message.content.strip() + "\n"
+
+    async def execute_stream_async(self, query: str):
+        """Async streaming execution using agent.astream for concurrency support."""
+        input_dict = {
+            "messages": [
+                {"role": "user", "content": query},
+            ]
+        }
+        async for chunk in self.agent.astream(input_dict, stream_mode="values", context={"report": False}):
             latest_message = chunk["messages"][-1]
             if latest_message.content:
                 yield latest_message.content.strip() + "\n"

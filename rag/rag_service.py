@@ -3,6 +3,8 @@ from rag.vector_store import VectorStoreService
 from utils.prompt_loader import load_rag_prompts
 from langchain_core.prompts import PromptTemplate
 from model.factory import chat_model
+from typing import List
+import asyncio
 
 
 class RagSummarizeService():
@@ -22,6 +24,10 @@ class RagSummarizeService():
     def retriever_docs(self, query : str):
         return self.retriever.invoke(query)
     
+    async def aretriever_docs(self, query: str):
+        """Async version of retriever docs."""
+        return await self.retriever.ainvoke(query)
+
     def rag_summarize(self, query : str):
         context_docs = self.retriever_docs(query)
         context = ""
@@ -37,6 +43,20 @@ class RagSummarizeService():
                 "context" : context,
             }
         )
+
+    async def arag_summarize(self, query: str):
+        """Async RAG summarize using async retriever and model chain."""
+        context_docs = await self.aretriever_docs(query)
+        # Build context string (CPU-bound, small); keep synchronous for simplicity
+        parts: List[str] = []
+        for idx, doc in enumerate(context_docs, start=1):
+            parts.append(f"[Reference {idx}]: {doc.page_content} | Metadata: {doc.metadata} \n")
+        context = "".join(parts)
+
+        return await self.chain.ainvoke({
+            "input": query,
+            "context": context,
+        })
             
 if __name__ == "__main__" :
     rag = RagSummarizeService()

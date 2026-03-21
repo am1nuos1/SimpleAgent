@@ -1,5 +1,3 @@
-import time
-
 import streamlit as st
 from agent.react_agent import ReactAgent
 
@@ -28,13 +26,10 @@ if prompt:
         res_stream = st.session_state["agent"].execute_stream(prompt)
 
         def capture(generator, cache_list):
-
+            # Stream by chunk without per-character delay to improve responsiveness
             for chunk in generator:
                 cache_list.append(chunk)
-
-                for char in chunk:
-                    time.sleep(0.01)
-                    yield char
+                yield chunk
 
         st.chat_message("assistant").write_stream(capture(res_stream, response_messages))
         st.session_state["message"].append({"role": "assistant", "content": response_messages[-1]})

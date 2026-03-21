@@ -6,6 +6,8 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 import os
 from utils.file_handler import txt_loader, pdf_loader, listdir_with_allowed_type, get_file_md5_hex
 from utils.logger_handler import logger
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import List, Tuple
 
 
 class VectorStoreService:
@@ -61,34 +63,38 @@ class VectorStoreService:
             tuple(chroma_conf["allow_knowledge_file_type"]),
         )
 
-        for path in allowed_files_path:
+        # Process files concurrently to speed up first-time indexing (IO/network bound for embeddings)
+        def process_one(path: str) -> Tuple[str, int]:
             md5_hex = get_file_md5_hex(path)
-
-            if check_md5_hex(md5_hex):
+            if md5_hex and check_md5_hex(md5_hex):
                 logger.info(f"[VectorStore] Skipping already indexed file: {path}")
-                continue
-            try:
-                documents = get_file_documets(path)
-                if not documents:
-                    logger.warning(f"[VectorStore] No readable content found: {path}")
-                    continue
-
-                split_document = self.spliter.split_documents(documents=documents)
-
-                if not split_document:
-                    logger.warning(f"[VectorStore] No content after splitting: {path}")
-                    continue
-                
-                self.vector_store.add_documents(split_document)
-
+                return (path, 0)
+            documents = get_file_documets(path)
+            if not documents:
+                logger.warning(f"[VectorStore] No readable content found: {path}")
+                return (path, 0)
+            split_document = self.spliter.split_documents(documents=documents)
+            if not split_document:
+                logger.warning(f"[VectorStore] No content after splitting: {path}")
+                return (path, 0)
+            # Adding documents triggers embeddings; do it here per-file
+            self.vector_store.add_documents(split_document)
+            if md5_hex:
                 save_md5_hex(md5_hex)
+            return (path, len(split_document))
 
-                logger.info(f"[VectorStore] Loaded successfully: {path} (chunks={len(split_document)})")
-            
-            except Exception as e:
-                logger.error(f"[VectorStore] Load failed for {path}: {str(e)}", exc_info=True)
-
-                continue
+        max_workers = min(4, os.cpu_count() or 1)  # cap workers to avoid rate limits
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = {executor.submit(process_one, path): path for path in allowed_files_path}
+            for future in as_completed(futures):
+                path = futures[future]
+                try:
+                    p, chunks = future.result()
+                    if chunks > 0:
+                        logger.info(f"[VectorStore] Loaded successfully: {p} (chunks={chunks})")
+                except Exception as e:
+                    logger.error(f"[VectorStore] Load failed for {path}: {str(e)}", exc_info=True)
+                    continue
 
 
 if __name__ == "__main__":
